@@ -2,6 +2,7 @@ package me.ibrahimsn.lib
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
 import android.text.InputType
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -153,7 +154,9 @@ class PhoneNumberKit private constructor(
                 is State.Attached -> {
                     if (isIconEnabled) {
                         getFlagIcon(state.country.iso2)?.let { icon ->
-                            input.get()?.startIconDrawable = icon
+                            val ld = ContextCompat.getDrawable(context, R.drawable.flag) as LayerDrawable
+                            ld.setDrawable(0, icon)
+                            input.get()?.startIconDrawable = ld
                         }
                     }
                     input.get()?.editText?.let { editText ->
