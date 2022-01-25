@@ -82,13 +82,12 @@ class PhoneNumberKit private constructor(
                             state.country.iso2
                         )
 
-                        if (state.country.code != parsedNumber?.countryCode) {
-                            val country = countriesCache.findCountry(
-                                parsedNumber?.let {
-                                    PhoneNumberUtil.createInstance(context)
-                                        .getRegionCodeForCountryCode(it.countryCode)?.lowercase()
-                                }
-                            )
+                        val iso2 = parsedNumber?.let {
+                            PhoneNumberUtil.createInstance(context)
+                                .getRegionCodeForCountryCode(it.countryCode)?.lowercase()
+                        }
+                        if (state.country.iso2 != iso2) {
+                            val country = countriesCache.findCountry(iso2)
                             if (country != null) {
                                 setCountry(country)
                             }
