@@ -15,6 +15,7 @@ import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.firstOrNull
 import me.ibrahimsn.lib.api.Country
 import me.ibrahimsn.lib.api.Phone
 import me.ibrahimsn.lib.internal.core.Proxy
@@ -153,22 +154,25 @@ class PhoneNumberKit private constructor(
     }
 
     private fun collectState() = scope.launch {
-        state.collect { state ->
-            when (state) {
+        state.collect { stateFlow ->
+            when (stateFlow) {
                 is State.Ready -> {}
                 is State.Attached -> {
                     if (isIconEnabled) {
-                        getFlagIcon(state.country.iso2)?.let { icon ->
+                        getFlagIcon(stateFlow.country.iso2)?.let { icon ->
                             val ld = ContextCompat.getDrawable(context, R.drawable.flag) as LayerDrawable
                             ld.setDrawable(0, icon)
                             input.get()?.startIconDrawable = ld
                         }
                     }
                     input.get()?.editText?.let { editText ->
-                        setupListener(editText, state.pattern)
+                        setupListener(editText, stateFlow.pattern)
+                        if (editText.text.isNotEmpty()) {
+                            editText.text = editText.text
+                        }
                     }
                     if (inputValue.isNullOrEmpty()) {
-                        inputValue = state.country.code.toString()
+                        inputValue = stateFlow.country.code.toString()
                     }
                 }
             }
