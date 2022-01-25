@@ -11,6 +11,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.redmadrobot.inputmask.MaskedTextChangedListener
 import com.redmadrobot.inputmask.MaskedTextChangedListener.Companion.installOn
 import com.redmadrobot.inputmask.helper.AffinityCalculationStrategy
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -82,7 +83,12 @@ class PhoneNumberKit private constructor(
                         )
 
                         if (state.country.code != parsedNumber?.countryCode) {
-                            val country = countriesCache.findCountry(parsedNumber?.countryCode)
+                            val country = countriesCache.findCountry(
+                                parsedNumber?.let {
+                                    PhoneNumberUtil.createInstance(context)
+                                        .getRegionCodeForCountryCode(it.countryCode)?.lowercase()
+                                }
+                            )
                             if (country != null) {
                                 setCountry(country)
                             }
